@@ -115,6 +115,15 @@ void LogicHandler::processButtonInput(const QString &buttonText, const QString &
         }
         case 4:     //button is decimal
         {
+            if (operatorHanging)
+            {
+                setMainExpression(m_mainExpression + "0");
+                setMainResult("0");
+            }
+            if (m_mainExpression.isEmpty())
+            {
+                setMainExpression("0");
+            }
             if (!m_mainResult.contains('.'))
             {
                 setMainResult(m_mainResult + '.');
