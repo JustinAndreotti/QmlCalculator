@@ -1,8 +1,11 @@
 
 TODO
-    On lines 123, 163
-    - Get basic math operations underway'
+    - On lines 123, 163
+        - Get basic math operations underway
     - start with addition and get that working
+    - Handle the return of inf when dividing by zero with undefined
+    - Handle the return of nan when taking the remainder of zero with undefined
+    - Remove all TODO, DEBUG, and TEMP code tags
 
 
 
@@ -12,6 +15,8 @@ Current Bugs
     - Math on Negative numbers doesnt seem to happen
     - Zero doesnt go into mainExpression if it was not explicit input by the user
       on the first mainResult input
+    - after hitting an operator pressing the decimal button doesnt reset the expression
+      the same way as if you had pressed another number
 
 
 

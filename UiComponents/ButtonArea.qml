@@ -55,7 +55,7 @@ Item
          "buttonType" : "back"},
 
         {"buttonText" : "%", "buttonColor" : appProperties.buttonColor,
-         "buttonTextColor" : appProperties.buttonTextColorWhite,
+         "buttonTextColor" : appProperties.buttonTextColorGrey,
          "buttonType" : "operator"},
 
         {"buttonText" : "÷", "buttonColor" : appProperties.buttonColor,

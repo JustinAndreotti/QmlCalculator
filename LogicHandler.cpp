@@ -1,5 +1,6 @@
 #include "LogicHandler.h"
 #include <QDebug>
+#include <cmath>
 //#include <QString>
 
 //********************constructor****************************
@@ -301,13 +302,13 @@ void LogicHandler::changeSign(QString &mainInput)
 void LogicHandler::performOperation(const QString &lastOperator, QString &mainResult, qreal &tempResult)
 {
     //find desired operation
-    if (lastOperator == "*")
+    if (lastOperator == "x")
     {
-        //multiplication
+        tempResult = logicMultiply(mainResult, tempResult);
     }
     if (lastOperator == "÷")
     {
-        //division
+        tempResult = logicDivide(mainResult, tempResult);
     }
     if (lastOperator == "+")
     {
@@ -319,7 +320,7 @@ void LogicHandler::performOperation(const QString &lastOperator, QString &mainRe
     }
     if (lastOperator == "%")
     {
-        //remainder
+        tempResult = logicRemainder(mainResult, tempResult);
     }
 }
 
@@ -345,4 +346,42 @@ qreal LogicHandler::logicSubtract(QString &mainResult, qreal &tempResult)
     qDebug() << "So " << firstValue << " - " << secondValue << "is: " << firstValue - secondValue;
     //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
     return tempResult = firstValue - secondValue;
+}
+
+qreal LogicHandler::logicDivide(QString &mainResult, qreal &tempResult)
+{
+    qreal firstValue = tempResult;
+    qreal secondValue = mainResult.toDouble();
+    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
+    qDebug() << "In logicDivide function; firstValue is: " << firstValue;
+    qDebug() << "In logicDivide function; secondValue is: " << secondValue;
+    qDebug() << "So " << firstValue << " - " << secondValue << "is: " << firstValue / secondValue;
+    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
+
+    //TODO - handle the return of inf when dividing by zero to show undefined instead
+    return firstValue / secondValue;
+}
+
+qreal LogicHandler::logicMultiply(QString &mainResult, qreal &tempResult)
+{
+    qreal firstValue = tempResult;
+    qreal secondValue = mainResult.toDouble();
+    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
+    qDebug() << "In logicMultiply function; firstValue is: " << firstValue;
+    qDebug() << "In logicMultiply function; secondValue is: " << secondValue;
+    qDebug() << "So " << firstValue << " * " << secondValue << "is: " << firstValue * secondValue;
+    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
+    return tempResult = firstValue * secondValue;
+}
+
+qreal LogicHandler::logicRemainder(QString &mainResult, qreal &tempResult)
+{
+    qreal firstValue = tempResult;
+    qreal secondValue = mainResult.toDouble();
+    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
+    qDebug() << "In logicRemainder function; firstValue is: " << firstValue;
+    qDebug() << "In logicRemainder function; secondValue is: " << secondValue;
+    qDebug() << "So " << firstValue << " % " << secondValue << "is: " << remainder(firstValue, secondValue);
+    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
+    return tempResult = remainder(firstValue, secondValue);
 }
