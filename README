@@ -1,0 +1,21 @@
+
+TODO
+    On lines 123, 163
+    - Get basic math operations underway'
+    - start with addition and get that working
+
+
+
+
+Current Bugs
+    - Change sign does not apply to the m_mainExpression
+    - Math on Negative numbers doesnt seem to happen
+    - Zero doesnt go into mainExpression if it was not explicit input by the user
+      on the first mainResult input
+
+
+
+
+Notes
+    - Unifinished code has //TODO above and below
+    - Debug statements that are intended to be removed have //DEBUG above and below
