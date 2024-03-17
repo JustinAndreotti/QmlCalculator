@@ -203,7 +203,10 @@ void LogicHandler::processButtonInput(const QString &buttonText, const QString &
             }
             else
             {
-                setPastResult(QString::number(m_tempResult));
+                if (QString::number(m_tempResult) == "nan" || QString::number(m_tempResult) == "inf")
+                {
+                    setPastResult("undefined");
+                }else setPastResult(QString::number(m_tempResult));
                 setPastExpression(m_mainExpression);
             }
 

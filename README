@@ -1,11 +1,6 @@
 
 TODO
-    - Handle the return of inf when dividing by zero with undefined
-    - Handle the return of nan when taking the remainder of zero with undefined
     - Remove all TODO, DEBUG, and TEMP code tags
-
-
-
 
 Current Bugs
     - Change sign does not apply to the m_mainExpression
