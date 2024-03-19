@@ -13,6 +13,7 @@ LogicHandler::LogicHandler(QObject *parent) : QObject{parent}
     m_tempResult = 0;
     operatorCount = 0;
     lastOperator = "n/a";
+    numInputCount = 0;
     operatorHanging = false;
 }
 
@@ -80,20 +81,12 @@ void LogicHandler::setPastExpression(const QString &newPastExpression)
 //*****************Functions*******************************
 void LogicHandler::processButtonInput(const QString &buttonText, const QString &buttonType)
 {
-    //Figure out what kind of button it is
-    //clear, back, changeSign, decimal, operator, number
     int inputType = getButtonType(buttonType);
     switch (inputType)
     {
         case 1:     //button is clear
         {
-            //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
-            qDebug() << "Clear pressed";
-            qDebug() << " ";
-            qDebug() << " ";
-            qDebug() << " ";
-            //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
-
+            //reset all values
             setMainResult("0");
             setMainExpression("");
             setPastExpression("");
@@ -105,7 +98,20 @@ void LogicHandler::processButtonInput(const QString &buttonText, const QString &
         }
         case 2:     //button is back
         {
+            //remove the last input in both result and expression if applicable
             removeLastInput(m_mainResult);
+            if (!operatorHanging && numInputCount != 0)
+            {
+                m_mainExpression.removeLast();
+                emit mainExpressionChanged();
+            }
+            if (numInputCount <= 0)
+            {
+                numInputCount = 0;
+            }
+            else numInputCount--;
+
+            emit mainResultChanged();
             break;
         }
         case 3:     //button is changeSign
@@ -130,6 +136,10 @@ void LogicHandler::processButtonInput(const QString &buttonText, const QString &
                 setMainExpression(m_mainExpression + '.');
                 operatorHanging = false;
             }
+            if (!m_mainResult.contains('.'))
+            {
+                numInputCount++;
+            }
             break;
         }
         case 5:     //button is operator
@@ -145,14 +155,8 @@ void LogicHandler::processButtonInput(const QString &buttonText, const QString &
                 }
                 else performOperation(lastOperator, m_mainResult, m_tempResult);
 
-                //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
-                qDebug() << "Operator pressed; mainResult is: " << m_mainResult;
-                qDebug() << "                  tempResult is: " << m_tempResult;
-                qDebug() << "                  lastOperator is: " << lastOperator;
-                qDebug() << " ";
-                //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
-
                 //update flags
+                numInputCount = 0;
                 lastOperator = buttonText;
                 operatorHanging = true;
                 operatorCount++;
@@ -174,6 +178,7 @@ void LogicHandler::processButtonInput(const QString &buttonText, const QString &
                 }
                 else setMainResult("");
             }
+            numInputCount++;
             setMainResult(m_mainResult + buttonText);
             setMainExpression(m_mainExpression + buttonText);
             operatorHanging = false;
@@ -186,7 +191,6 @@ void LogicHandler::processButtonInput(const QString &buttonText, const QString &
                 m_tempResult = m_mainResult.toDouble();
             }
 
-            //TODO
             //process the expression
             if (!operatorHanging) //ensures that if the last button was an operator
             {                     //no math is done as tempResult is already up to date
@@ -215,6 +219,7 @@ void LogicHandler::processButtonInput(const QString &buttonText, const QString &
             setMainResult("0");
             operatorCount = 0;
             m_tempResult = 0;
+            numInputCount= 0;
             lastOperator = "n/a";
             operatorHanging = false;
             break;
@@ -276,12 +281,10 @@ void LogicHandler::removeLastInput(QString &mainInput)
     if (mainInput.length() > 1 && !isNegative(mainInput))
     {
         setMainResult(mainInput.removeLast());
-        emit mainResultChanged();
     }
     else if (mainInput.length() > 2 && isNegative(mainInput))
     {
         setMainResult(mainInput.removeLast());
-        emit mainResultChanged();
     }
     else
     {
@@ -291,7 +294,6 @@ void LogicHandler::removeLastInput(QString &mainInput)
             setMainResult("-0");
         }
         else setMainResult("0");
-        emit mainResultChanged();
     }
 }
 
@@ -340,11 +342,6 @@ qreal LogicHandler::logicAdd(QString &mainResult, qreal &tempResult)
 {
     qreal firstValue = tempResult;
     qreal secondValue = mainResult.toDouble();
-    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
-    qDebug() << "In logicAdd function; firstValue is: " << firstValue;
-    qDebug() << "In logicAdd function; secondValue is: " << secondValue;
-    qDebug() << "So " << firstValue << " + " << secondValue << "is: " << firstValue + secondValue;
-    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
     return tempResult = firstValue + secondValue;
 }
 
@@ -352,11 +349,6 @@ qreal LogicHandler::logicSubtract(QString &mainResult, qreal &tempResult)
 {
     qreal firstValue = tempResult;
     qreal secondValue = mainResult.toDouble();
-    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
-    qDebug() << "In logicSubtract function; firstValue is: " << firstValue;
-    qDebug() << "In logicSubtract function; secondValue is: " << secondValue;
-    qDebug() << "So " << firstValue << " - " << secondValue << "is: " << firstValue - secondValue;
-    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
     return tempResult = firstValue - secondValue;
 }
 
@@ -364,13 +356,7 @@ qreal LogicHandler::logicDivide(QString &mainResult, qreal &tempResult)
 {
     qreal firstValue = tempResult;
     qreal secondValue = mainResult.toDouble();
-    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
-    qDebug() << "In logicDivide function; firstValue is: " << firstValue;
-    qDebug() << "In logicDivide function; secondValue is: " << secondValue;
-    qDebug() << "So " << firstValue << " - " << secondValue << "is: " << firstValue / secondValue;
-    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
 
-    //TODO - handle the return of inf when dividing by zero to show undefined instead
     return firstValue / secondValue;
 }
 
@@ -378,11 +364,6 @@ qreal LogicHandler::logicMultiply(QString &mainResult, qreal &tempResult)
 {
     qreal firstValue = tempResult;
     qreal secondValue = mainResult.toDouble();
-    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
-    qDebug() << "In logicMultiply function; firstValue is: " << firstValue;
-    qDebug() << "In logicMultiply function; secondValue is: " << secondValue;
-    qDebug() << "So " << firstValue << " * " << secondValue << "is: " << firstValue * secondValue;
-    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
     return tempResult = firstValue * secondValue;
 }
 
@@ -390,10 +371,5 @@ qreal LogicHandler::logicRemainder(QString &mainResult, qreal &tempResult)
 {
     qreal firstValue = tempResult;
     qreal secondValue = mainResult.toDouble();
-    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
-    qDebug() << "In logicRemainder function; firstValue is: " << firstValue;
-    qDebug() << "In logicRemainder function; secondValue is: " << secondValue;
-    qDebug() << "So " << firstValue << " % " << secondValue << "is: " << remainder(firstValue, secondValue);
-    //DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG//DEBUG
     return tempResult = remainder(firstValue, secondValue);
 }
